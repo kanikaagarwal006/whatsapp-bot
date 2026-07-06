@@ -4,7 +4,7 @@ const qrcode = require('qrcode-terminal');
 // Initialize the client with local authentication strategy
 const client = new Client({
     authStrategy: new LocalAuth({
-        dataPath: './wa_sessions' // Forces the session data to save directly in your repository folder
+        dataPath: './.wwebjs_auth' // Standard safe relative structure
     }),
     webVersionCache: {
         type: 'remote',
