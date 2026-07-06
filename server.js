@@ -3,15 +3,18 @@ const qrcode = require('qrcode-terminal');
 
 // Initialize the client with local authentication strategy
 const client = new Client({
-    authStrategy: new LocalAuth({
-        dataPath: './wa_sessions' // Local directory where session tokens are stored securely
-    }),
+    authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-extensions'
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
         ]
     }
 });
