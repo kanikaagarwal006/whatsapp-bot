@@ -3,7 +3,9 @@ const qrcode = require('qrcode-terminal');
 
 // Initialize the client with local authentication strategy
 const client = new Client({
-    authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth({
+        dataPath: './wa_sessions' // Forces the session data to save directly in your repository folder
+    }),
     webVersionCache: {
         type: 'remote',
         remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1018591874-alpha.html'
