@@ -1,5 +1,6 @@
 const express = require('express');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const qrcode = require('qrcode-terminal');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -12,13 +13,20 @@ async function startBot() {
     
     const sock = makeWASocket({
         auth: state,
-        printQRInTerminal: true
+        printQRInTerminal: false // Turn off the broken built-in printer
     });
 
     sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
+        const { connection, lastDisconnect, qr } = update;
+        
+        // Print the QR code manually when it updates
+        if (qr) {
+            console.log('--- SCAN THE QR CODE BELOW TO LINK ACCOUNT ---');
+            qrcode.generate(qr, { small: true });
+        }
+
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log('Connection closed, reconnecting: ', shouldReconnect);
@@ -37,7 +45,7 @@ async function startBot() {
         const from = msg.key.remoteJid;
 
         if (userMessage === 'hi' || userMessage === 'hello') {
-            await sock.sendMessage(from, { text: 'Hello! Welcome to our automated service. Type **1** for billing or **2** for downloading our latest brochure.' });
+            await sock.sendMessage(from, { text: 'Hello! Welcome to our automated service. Type **1** for billing.' });
         }
     });
 }
