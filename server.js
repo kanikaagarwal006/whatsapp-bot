@@ -13,9 +13,10 @@ const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 // Initialize the client with local authentication strategy
+// Initialize the client with strict memory saving configurations
 const client = new Client({
     authStrategy: new LocalAuth({
-        dataPath: './.wwebjs_auth' // Standard safe relative structure
+        dataPath: './.wwebjs_auth'
     }),
     webVersionCache: {
         type: 'remote',
@@ -31,9 +32,21 @@ const client = new Client({
             '--no-first-run',
             '--no-zygote',
             '--single-process',
-            '--disable-gpu'
+            '--disable-gpu',
+            // Additional RAM/Memory saving flags:
+            '--disable-extensions',
+            '--js-flags="--max-old-space-size=256"', // Hard limits node/v8 memory usage
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-breakpad',
+            '--disable-component-extensions-with-background-pages'
         ]
     }
+});
+
+// Add this new event listener right below your QR event listener to watch for hidden blocks
+client.on('auth_failure', (msg) => {
+    console.error('--- AUTHENTICATION FAILURE ---', msg);
 });
 
 // Event: Generate QR Code for linking device
